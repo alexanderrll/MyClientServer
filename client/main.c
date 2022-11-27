@@ -26,15 +26,16 @@ void *get_in_addr(struct sockaddr *sa)
 
 void main(int argc, char **argv[])
 {
-    int status,
-        sockfd,     //descr socket
-        numbytes;
+    int status = 0,
+        sockfd = 0,     //descr socket
+        numbytes = 0;
     char *ipv4_connect = "127.0.0.1",
-         s[INET6_ADDRSTRLEN];
+         s[INET6_ADDRSTRLEN],
+         buf[MAXDATASIZE];
 
     struct addrinfo hints, 
-                    *p_servinfo, //results
-                    *p;          //
+                    *p_servinfo = NULL, //results
+                    *p = NULL;          //
 
     memset(&hints, 0, sizeof(hints));   //clear struct
     hints.ai_family = AF_INET;          //ipv4
@@ -65,16 +66,24 @@ void main(int argc, char **argv[])
         break;
     }
 
+    freeaddrinfo(p_servinfo);
+
     if(p == NULL)
     {
         fprintf(stderr, "client: failed to connect\n");
         exit(2);
     }
-
     inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr), s, sizeof(s));
     fprintf(stdout, "client: connecting to %s\n", s);
 
-    freeaddrinfo(p_servinfo);
-    close(sockfd);
+    if((numbytes = recv(sockfd, buf, MAXDATASIZE - 1, 0)) == -1)
+    {
+        fprintf(stdout, "client: connecting to %s\n", s);
+        exit(1);
+    }
 
+    buf[numbytes] = '\0';
+
+    fprintf(stdout, "client: recieved '%s'\n", buf);
+    close(sockfd);
 }
