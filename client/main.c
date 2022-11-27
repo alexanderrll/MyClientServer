@@ -68,22 +68,16 @@ void main(int argc, char **argv[])
 
     freeaddrinfo(p_servinfo);
 
-    if(p == NULL)
-    {
-        fprintf(stderr, "client: failed to connect\n");
-        exit(2);
-    }
+    char input[1000];
     inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr), s, sizeof(s));
-    fprintf(stdout, "client: connecting to %s\n", s);
+    fprintf(stderr, "client: connecting to %s\n", s);
 
-    if((numbytes = recv(sockfd, buf, MAXDATASIZE - 1, 0)) == -1)
-    {
-        fprintf(stdout, "client: connecting to %s\n", s);
-        exit(1);
+    while(1){
+        memset(&input, 0, sizeof(input));
+        scanf("%s", &input);
+        numbytes = send(sockfd, &input, 1000, 0);
+        if(numbytes)
+            fprintf(stderr, "client: sends something\n");
     }
-
-    buf[numbytes] = '\0';
-
-    fprintf(stdout, "client: recieved '%s'\n", buf);
     close(sockfd);
 }
