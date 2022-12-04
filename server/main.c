@@ -14,21 +14,22 @@
 #define PORT "3000" //port for users
 #define BACKLOG 10  //len count wait connect
 
-void sigchld_handler(int s)
+void sigchld_handler()
 {
     while(waitpid(-1, NULL, WNOHANG) > 0);
 }
 
 //get sockaddr ipv4
-void *get_in_addr(struct sockaddr *sa)
+struct in_addr *get_in_addr(struct sockaddr *sa)
 {
     if(sa->sa_family == AF_INET)
     {
         return &(((struct sockaddr_in*)sa)->sin_addr);
     }
+    return NULL;
 }
 
-void main(int argc, char **argv[])
+int main()
 {
     int sockfd = 0, //listening
         new_fd = 0, //new connection
@@ -65,7 +66,7 @@ void main(int argc, char **argv[])
 
         if(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
         {
-            fprintf(stderr, "server: setcockopt%s\n");
+            fprintf(stderr, "server: setcockopt\n");
             exit(1);
         }
 
@@ -121,8 +122,16 @@ void main(int argc, char **argv[])
         if(!fork())
         {
             close(sockfd);
-            if(send(new_fd, "Hello world!", 13, 0) == -1)
+
+            while(1) {
+                char input_buff[256];
+                memset(&input_buff, 0, sizeof(input_buff));
+                scanf("%s", &input_buff);
+                send(new_fd, &input_buff, 13, 0);
+                fprintf(stderr, "server:send\n");
+            }
                 exit(5);
+
             close(new_fd);
                 exit(0);
         }

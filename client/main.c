@@ -3,6 +3,9 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <arpa/inet.h>
 
 #define PORT "3000"
 
@@ -17,14 +20,15 @@ void printAddrInfo(struct addrinfo *addrinfo)
     //fprintf(stdout, "IPv4= %d\n", addrinfo->ai_protocol);
 }
 
-void *get_in_addr(struct sockaddr *sa)
+struct in_addr *get_in_addr(struct sockaddr *sa)
 {
     if(sa->sa_family == AF_INET){
         return &(((struct sockaddr_in*)sa)->sin_addr);
     }
+    return NULL;
 }
 
-void main(int argc, char **argv[])
+int main()
 {
     int status = 0,
         sockfd = 0,     //descr socket
@@ -44,7 +48,7 @@ void main(int argc, char **argv[])
 
     if((status = getaddrinfo(ipv4_connect, PORT, &hints, &p_servinfo)) != 0) {
         fprintf(stderr, "getaddrinfo errpr: %s\n", gai_strerror(status));
-        exit(1);
+        return 1;
     }
 
 
@@ -71,16 +75,20 @@ void main(int argc, char **argv[])
     if(p == NULL)
     {
         fprintf(stderr, "client: failed to connect\n");
-        exit(2);
+        return 2;
     }
     inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr), s, sizeof(s));
     fprintf(stdout, "client: connecting to %s\n", s);
 
-    if((numbytes = recv(sockfd, buf, MAXDATASIZE - 1, 0)) == -1)
-    {
-        fprintf(stdout, "client: connecting to %s\n", s);
-        exit(1);
+    while(1) {
+        recv(sockfd, buf, MAXDATASIZE - 1, 0);
     }
+
+   // if((numbytes = recv(sockfd, buf, MAXDATASIZE - 1, 0)) == -1)
+   // {
+        //fprintf(stdout, "client: connecting to %s\n", s);
+     //   return 3;
+   // }
 
     buf[numbytes] = '\0';
 
