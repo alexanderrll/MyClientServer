@@ -1,0 +1,7 @@
+#!/usr/bin/sh
+
+rm client.out server.out
+
+cc client/main.c -o client.out
+cc server/main.c -o server.out
+
