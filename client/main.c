@@ -82,6 +82,8 @@ int main()
 
     while(1) {
         recv(sockfd, buf, MAXDATASIZE - 1, 0);
+        fprintf(stderr, "client: send %s\n", buf);
+        memset(&buf, 0, sizeof(buf));
     }
 
     buf[numbytes] = '\0';
