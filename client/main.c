@@ -47,7 +47,7 @@ int main()
     hints.ai_flags = AI_PASSIVE;
 
     if((status = getaddrinfo(ipv4_connect, PORT, &hints, &p_servinfo)) != 0) {
-        fprintf(stderr, "getaddrinfo errpr: %s\n", gai_strerror(status));
+        fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
         return 1;
     }
 
@@ -57,14 +57,14 @@ int main()
 
         if((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
         {
-            fprintf(stderr, "client:socket\n");
+            fprintf(stderr, "client error:socket\n");
             continue;
         }
 
         if(connect(sockfd, p->ai_addr, p->ai_addrlen) == 01)
         {
             close(sockfd);
-            fprintf(stderr, "client:connect\n");
+            fprintf(stderr, "client error:connect\n");
             continue;
         }
         break;
@@ -74,7 +74,7 @@ int main()
 
     if(p == NULL)
     {
-        fprintf(stderr, "client: failed to connect\n");
+        fprintf(stderr, "client error: failed to connect\n");
         return 2;
     }
     inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr), s, sizeof(s));
@@ -83,12 +83,6 @@ int main()
     while(1) {
         recv(sockfd, buf, MAXDATASIZE - 1, 0);
     }
-
-   // if((numbytes = recv(sockfd, buf, MAXDATASIZE - 1, 0)) == -1)
-   // {
-        //fprintf(stdout, "client: connecting to %s\n", s);
-     //   return 3;
-   // }
 
     buf[numbytes] = '\0';
 

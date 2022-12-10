@@ -60,20 +60,20 @@ int main()
     {
         if((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
         {
-            fprintf(stderr, "server:socket\n");
+            fprintf(stderr, "server error:socket\n");
             continue;
         }
 
         if(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
         {
-            fprintf(stderr, "server: setcockopt\n");
+            fprintf(stderr, "server error: setcockopt\n");
             exit(1);
         }
 
         if(bind(sockfd, p->ai_addr, p->ai_addrlen) == -1)
         {
             close(sockfd);
-            fprintf(stderr, "server:bind\n");
+            fprintf(stderr, "server error:bind\n");
             continue;
         }
         break;
@@ -81,7 +81,7 @@ int main()
 
     if(p == NULL)
     {
-        fprintf(stderr, "server:bind\n");
+        fprintf(stderr, "server error:bind\n");
         exit(2);
     }
 
@@ -89,7 +89,7 @@ int main()
 
     if(listen(sockfd, BACKLOG) == -1)
     {
-        fprintf(stderr, "server:listen\n");
+        fprintf(stderr, "server error:listen\n");
         exit(3);
     }
 
@@ -99,7 +99,7 @@ int main()
 
     if(sigaction(SIGCHLD, &sa, NULL) == -1)
     {
-        fprintf(stderr, "server:SIGACTION\n");
+        fprintf(stderr, "server error:SIGACTION\n");
         exit(4);
     }
 
@@ -112,7 +112,7 @@ int main()
 
         if(new_fd == -1)
         {
-            fprintf(stderr, "server:accept\n");
+            fprintf(stderr, "server error:accept\n");
             continue;
         }
         
